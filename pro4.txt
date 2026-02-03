@@ -1,0 +1,24 @@
+import pandas as pd
+
+print("---------23BDA055----------")
+df = pd.read_excel(r"F:\mmd\uber.xlsx")
+
+def mapper(data):
+    mapped_data = []
+    for distance in data["Trip_Distance"]:
+        if not pd.isna(distance):
+            mapped_data.append((distance, 1))
+    return mapped_data
+
+def reducer(mapped_data):
+    total_distance = 0
+    count = 0
+    for distance, c in mapped_data:
+        total_distance += distance
+        count += c
+    return total_distance / count
+
+mapped = mapper(df)
+average_distance = reducer(mapped)
+print(df.head(10))
+print("Average Trip Distance:", round(average_distance, 2))

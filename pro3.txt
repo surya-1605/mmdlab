@@ -1,0 +1,25 @@
+import pandas as pd
+
+print("--23BDA055--")
+
+df = pd.read_excel(r"F:\mmd\titanic.xlsx")
+
+def mapper(data):
+    mapper_data = []
+    for age in data["age"]:
+        if not pd.isna(age):
+            mapper_data.append((age, 1))
+    return mapper_data
+
+def reducer(mapped_data):
+    total_age = 0
+    count = 0
+    for age, c in mapped_data:
+        total_age += age
+        count += c
+    return total_age / count
+
+mapped = mapper(df)
+average_age = reducer(mapped)
+
+print("Average age of Titanic passengers:", round(average_age, 2))

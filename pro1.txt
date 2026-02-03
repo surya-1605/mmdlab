@@ -1,0 +1,24 @@
+import math
+
+print("--23BDA055--")
+
+docs = ["Good Boy", "Good Girl", "Boy Girl Good"]
+
+word = input("enter the word: ").lower()
+
+docs = [doc.lower().split() for doc in docs]
+
+tf = []
+for doc in docs:
+    tf.append(doc.count(word) / len(doc))
+
+print("TF(term frequency):", tf)
+
+df = sum(1 for doc in docs if word in doc)
+print("DF(document frequency):", df)
+
+idf = math.log10(len(docs) / df)
+print("IDF(inverse doc freq):", idf)
+
+tf_idf = [t * idf for t in tf]
+print("TF-IDF:", tf_idf)

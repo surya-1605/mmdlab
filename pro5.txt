@@ -1,0 +1,66 @@
+import random
+import hashlib
+from itertools import combinations
+
+print("--------23BDA055-------------")
+
+documents = {
+    "D1": {"data", "mining", "machine", "learning"},
+    "D2": {"data", "mining", "deep", "learning"},
+    "D3": {"artificial", "intelligence", "neural", "network"},
+    "D4": {"data", "science", "machine", "learning"}
+}
+
+b = 5      # number of bands
+r = 5      # rows per band
+num_hashes = b * r
+max_val = 1000
+
+def jaccard(doc1, doc2):
+    return len(doc1 & doc2) / len(doc1 | doc2)
+
+hash_functions = [(random.randint(1, max_val), random.randint(0, max_val))
+                  for _ in range(num_hashes)]
+
+def stable_hash(word):
+    return int(hashlib.md5(word.encode()).hexdigest(), 16)
+
+def minhashes(document):
+    signature = []
+    for a, c in hash_functions:
+        min_value = float('inf')
+        for word in document:
+            hash_val = (a * stable_hash(word) + c) % max_val
+            min_value = min(min_value, hash_val)
+        signature.append(min_value)
+    return signature
+
+signatures = {}
+for doc_id, doc in documents.items():
+    signatures[doc_id] = minhashes(doc)
+
+buckets = {}
+
+for doc_id, sig in signatures.items():
+    for band in range(b):
+        start = band * r
+        end = start + r
+        band_sig = tuple(sig[start:end])
+        bucket_key = (band, band_sig)
+
+        if bucket_key not in buckets:
+            buckets[bucket_key] = []
+        buckets[bucket_key].append(doc_id)
+
+candidates = set()
+
+for docs in buckets.values():
+    if len(docs) > 1:
+        for pair in combinations(docs, 2):
+            candidates.add(pair)
+
+print("Candidate document pairs and Jaccard similarity:\n")
+
+for d1, d2 in candidates:
+    sim = jaccard(documents[d1], documents[d2])
+    print(f"{d1} - {d2} : {round(sim, 2)}")

@@ -1,0 +1,28 @@
+import pandas as pd
+
+print("------23BDA055------")
+
+file_path = r"F:\mmd\electricity_consumption.xlsx"
+df = pd.read_excel(file_path)
+
+map = []
+
+for _, row in df.iterrows():
+    year = int(row["year"])
+    consumption = int(row["consumption"])
+    map.append((year, consumption))
+
+print("mapped output:")
+print(map)
+
+reducer = {}
+
+for year, consumption in map:
+    if year in reducer:
+        reducer[year] = max(reducer[year], consumption)
+    else:
+        reducer[year] = consumption
+
+print("maximum electricity per year:")
+for year, value in reducer.items():
+    print("year:", year, "max consumption:", value)
