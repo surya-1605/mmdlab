@@ -1,0 +1,62 @@
+import numpy as np
+
+print("--------23BDA055-------------")
+
+def pr(links,num_pages,iterations,damping=0.85):
+
+    ranks=np.ones(num_pages)/num_pages
+
+    m=np.zeros((num_pages,num_pages))
+
+    for page,outgoing_links in links.items():
+
+        if outgoing_links:
+
+            for link in outgoing_links:
+
+                if 0<=link<num_pages:
+
+                    m[link,page]=1/len(outgoing_links)
+
+                else:
+
+                    print(f"Warning: Ignoring invalid link {link} from page {page}")
+
+        else:
+
+            m[:,page]=1/num_pages
+
+    m=damping*m+(1-damping)/num_pages
+
+    print("iteration results:")
+
+    for i in range(iterations):
+
+        new_ranks=np.dot(m,ranks)
+
+        print(f"iteration {i+1}:{new_ranks}")
+
+        ranks=new_ranks
+
+    return ranks
+
+
+if __name__=="__main__":
+
+    num_pages=int(input("enter the number of pages:"))
+
+    iterations=int(input("enter the number of iterations:"))
+
+    web_graph={}
+
+    for i in range(num_pages):
+
+        links=list(map(int,input(f"enter outgoing links from page {i}(space-sep)").split()))
+
+        web_graph[i]=[link for link in links if 0<=link<num_pages]
+
+    ranks=pr(web_graph,num_pages,iterations)
+
+    for i,rank in enumerate(ranks):
+
+        print(f"final rank page{i}:{rank:.4f}")

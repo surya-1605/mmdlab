@@ -1,0 +1,53 @@
+import numpy as np
+from scipy.spatial.distance import euclidean
+
+print("--------23BDA055-------------")
+
+def initi_clust(data):
+    return [[point] for point in data]
+
+def closest_clust(clusters):
+    min_distance = float('inf')
+    closest_pair = None
+    for i in range(len(clusters)):
+        for j in range(i + 1, len(clusters)):
+            distance = euclidean(np.mean(clusters[i], axis=0), np.mean(clusters[j], axis=0))
+            if distance < min_distance:
+                min_distance = distance
+                closest_pair = (i, j)
+
+    return closest_pair
+
+def merge(clusters, i, j):
+    clusters[i].extend(clusters[j])
+    del clusters[j]
+
+def cure(data, num_clusters):
+    clusters = initi_clust(data)
+    while len(clusters) > num_clusters:
+        i, j = closest_clust(clusters)
+        merge(clusters, i, j)
+    return clusters
+
+
+if __name__ == "__main__":
+
+    num_points = int(input("Enter the number of data points: "))
+    num_features = int(input("Enter the number of features: "))
+
+    num_clusters = int(input("Enter the number of clusters: "))
+
+    data = []
+
+    print("Enter data points:")
+
+    for _ in range(num_points):
+        point = list(map(float, input().split()))
+        data.append(point)
+
+    data = np.array(data)
+
+    clusters = cure(data, num_clusters)
+
+    print("Clusters:")
+    print(clusters)
